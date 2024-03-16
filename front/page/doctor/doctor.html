@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>document</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+    <link rel="stylesheet" href="../../styles/common.css" />
+    <link rel="stylesheet" href="../../styles/icon/iconfont.css" />
+    <style>
+        #app{
+            display: flex;
+            flex-direction: column;
+        }
+        #container{
+            flex:2;
+            max-height: 100%;
+        }
+    </style>
+</head>
+
+<body style="overflow-y:hidden">
+<div id="app">
+    <el-menu
+            :default-active="activeIndex"
+            class="el-menu-demo"
+            mode="horizontal"
+            @select="handleSelect"
+            background-color="#1a4664"
+            text-color="#fff"
+            active-text-color="#148bb0">
+        <el-menu-item index="1" @click="show1()">健康咨询</el-menu-item>
+    </el-menu>
+
+    <div id="container"></div>
+
+</div>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../plugins/element-ui/index.js"></script>
+<!-- 引入axios -->
+<script src="../../plugins/axios/axios.min.js"></script>
+<script src="../../js/request.js"></script>
+<script src="../../api/login.js"></script>
+<script>
+    var Main = {
+        data() {
+            return {
+                activeIndex: '1'
+
+            };
+        },
+        mounted(){
+            window.onload = () =>{
+                var container = document.getElementById('container');
+                var iframe = document.createElement('iframe');
+                iframe.src = 'yuyue.html';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                container.appendChild(iframe);
+            }
+        },
+        methods: {
+            handleSelect(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            show1(){
+                var container = document.getElementById('container');
+                container.innerHTML="";
+                var iframe = document.createElement('iframe');
+                iframe.src = 'yuyue.html';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                container.appendChild(iframe);
+            }
+        }
+    }
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
+
+    // var container = document.getElementById('container');
+    // var iframe = document.createElement('iframe');
+    // iframe.src = 'healthy.html';
+    // iframe.style.width = '100%';
+    // iframe.style.height = '100%';
+    // container.appendChild(iframe);
+</script>
+
+</body>
+</html>

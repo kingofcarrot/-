@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Import style -->
+    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+    <!-- Import Vue 3 -->
+    <script src="//unpkg.com/vue@3"></script>
+    <!-- Import component library -->
+    <script src="//unpkg.com/element-plus"></script>
+    <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<!-- <div id="app">{{ message }}</div> -->
+<div id='userInfo'>
+    <el-descriptions title="用户信息" class="margin-top" :size="size" border :column="2">
+
+        <el-descriptions-item label="用户ID">{{ userInfo.id }} </el-descriptions-item>
+        <el-descriptions-item label="性别">{{ userInfo.sex }}</el-descriptions-item>
+        <el-descriptions-item label="用户名">{{ userInfo.username }}</el-descriptions-item>
+        <el-descriptions-item label="用户密码">{{ userInfo.password }}</el-descriptions-item>
+        <el-descriptions-item label="电话号码">{{ userInfo.phone }}</el-descriptions-item>
+    </el-descriptions>
+    <!-- </template> -->
+</div>
+</body>
+
+
+<script setup type="module">
+    const { createApp, ref, onMounted } = Vue
+    const app = createApp({
+        setup() {
+            const message = ref('Hello Vue!')
+            let userInfo = ref(0)
+            //     userInfo:[
+            //         {
+            //             id: null,
+            //             username: null,
+            //             password: null,
+            //             phone: null,
+            //             sex: null
+            //         }]
+            // })
+
+            onMounted(() => {
+                getUserInfo()
+            })
+
+            const getUserInfo = () => {
+                // const {proxy} = getCurrentInstance()
+                axios.get("/userinfo/userinfo?id=1")
+                    .then(function (response) {
+                        userInfo.value = response.data.data
+                        console.log(response.data.data)
+                        console.log(userInfo.id)
+                        // forceUpdate()
+                    })
+                    .catch(function (error) {
+                        console.log("获取个人信息失败")
+                        console.log(error)
+                    })
+            }
+
+            return {
+                message,
+                // user,
+                userInfo,
+                getUserInfo
+            }
+        }
+    })
+    // app.config.globalProperties.$http = axios
+    axios.defaults.baseURL = "http://10.135.129.4:8081"
+    app.use(ElementPlus)
+    app.mount("#userInfo")
+</script>
+
+<style scoped>
+    .cell-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .margin-top {
+        margin-top: 20px;
+    }
+</style>
+
+</html>

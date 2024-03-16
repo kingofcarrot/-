@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Import style -->
+  <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+  <!-- Import Vue 3 -->
+  <script src="//unpkg.com/vue@3"></script>
+  <!-- Import component library -->
+  <script src="//unpkg.com/element-plus"></script>
+  <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<div id="healthKnowledge">
+  <el-container>
+    <el-aside width="150px">
+      <el-scrollbar>
+        <el-menu style="margin-bottom: 10px;">
+
+          <el-button @click="getAllDetail()">
+            全部
+          </el-button>
+        </el-menu>
+        <el-menu style="margin-bottom: 10px;" v-for="item in categoryList">
+          <el-button @click="getDetail(item.category)">
+            {{ item.category }}
+          </el-button>
+        </el-menu>
+
+      </el-scrollbar>
+    </el-aside>
+
+    <el-main style="height:700px;width:70px;overflow:auto;background:#EEEEEE;">
+      <ul v-if="isShow">
+        <!-- <li>{{isShow}}</li> -->
+        <li v-for="item in detailList">
+          <el-card class="box-card">
+            <template #header>
+              <div class="card-header">
+                <span>{{ item.title }}</span>
+              </div>
+            </template>
+            <div class="text item">{{ item.content }}</div>
+          </el-card>
+        </li>
+      </ul>
+      <ul v-else>
+        <!-- <li>{{isShow}}</li> -->
+        <li v-for="item in list">
+          <el-card class="box-card">
+            <template #header>
+              <div class="card-header">
+                <span>{{ item.title }}</span>
+              </div>
+            </template>
+            <div class="text item">{{ item.content }}</div>
+          </el-card>
+        </li>
+      </ul>
+    </el-main>
+  </el-container>
+</div>
+</body>
+
+<script setup type="module">
+  const { createApp, ref, onMounted } = Vue
+  const app = createApp({
+    setup() {
+      let categoryList = ref(0)
+      let detailList = ref(0)
+      let list = ref(0)
+      let isShow = ref(false)
+
+      onMounted(() => {
+        //获取健康信息列表
+        axios.get('/listcategory')
+                .then(function (response) {
+                  console.log(response.data.data);
+                  console.log("获取目录列表成功")
+                  categoryList.value = response.data.data
+                })
+                .catch(function (error) {
+                  console.log(error);
+                })
+        getAllDetail();
+      })
+      //获取单个目录详细信息
+      const getDetail = (category) => {
+
+        axios.get('/listby?category=' + category)
+                .then(function (response) {
+                  isShow.value = true;//显示单个目录下的信息
+                  console.log(isShow)
+                  console.log(response.data.data);
+                  detailList.value = response.data.data
+                })
+                .catch(function (error) {
+                  console.log(error);
+                })
+      }
+
+      //获取所有的详细信息
+      const getAllDetail = () => {
+        axios.get("/list")
+                .then(function (response) {
+                  console.log(response.data.data);
+                  list.value = response.data.data
+                  isShow.value = false; //所有的详细详细信息
+                })
+                .catch(function (error) {
+                  console.log(error);
+                })
+      }
+      return {
+        categoryList,
+        detailList,
+        list,
+        isShow,
+        getDetail,
+        getAllDetail,
+      }
+    }
+
+  })
+  axios.defaults.baseURL = "http://10.135.129.4:8081/healthknow"
+  app.use(ElementPlus)
+  app.mount("#healthKnowledge")
+</script>
+
+<style>
+  /* 卡片样式 */
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .box-card {
+    width: 400px;
+  }
+</style>
+
+</html>

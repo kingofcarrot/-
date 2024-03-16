@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Import style -->
+    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+    <!-- Import Vue 3 -->
+    <script src="//unpkg.com/vue@3"></script>
+    <!-- Import component library -->
+    <script src="//unpkg.com/element-plus"></script>
+    <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<div id="relationship" >
+    <div v-for="item in relationshipList">
+        <el-card class="box-card" style="margin-top: 20px;">
+            <el-descriptions  class="item text">
+                <el-descriptions-item label="用户ID">{{item.idB}}</el-descriptions-item>
+                <el-descriptions-item label="姓名">{{item.nameB}}</el-descriptions-item>
+                <el-descriptions-item label="关系">{{item.relationship}}</el-descriptions-item>
+            </el-descriptions>
+
+        </el-card>
+    </div>
+</div>
+</body>
+
+<script setup type="module">
+    const { createApp, ref, onMounted } = Vue
+    const app = createApp({
+        setup() {
+            let relationshipList = ref(0)
+
+            onMounted(() => {
+                getRelationshipList()
+            })
+            //获取数据
+            const getRelationshipList = () => {
+                axios.get("/family/show/relation?id=1")
+                    .then(function (response) {
+                        relationshipList.value = response.data.data
+                        console.log(relationshipList)
+                    })
+                    .catch(function (response) {
+                        console.log(error)
+                    })
+            }
+
+            return {
+                relationshipList,
+            }
+        }
+    })
+    axios.defaults.baseURL = "http://10.135.129.4:8081"
+    app.use(ElementPlus)
+    app.mount("#relationship")
+</script>
+
+
+<style scoped>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        padding: 18px 0;
+    }
+
+    .box-card {
+        width: 480px;
+    }
+</style>
+
+</html>

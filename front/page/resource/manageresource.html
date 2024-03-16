@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>健康评估</title>
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <style>
+
+  </style>
+</head>
+<body>
+
+
+<!--<div id="app">-->
+<!--  -->
+<!--</div>-->
+<div id="app">
+  <template>
+    <div style="padding:10px">
+      <el-button type="primary" size="mini" @click="addRows()">添加行</el-button>
+      <el-button type="danger" size="mini" @click="deleteRows()">删除行</el-button>
+      <el-button type="primary" size="mini" @click="on()">保存更改</el-button>
+      <!-- <el-button type="primary" size="mini" @click="test()">测试</el-button> -->
+      <!-- <el-button type="primary" size="mini" >提交</el-button> -->
+    </div>
+
+    <el-table :data="tableData" border style="margin:10px" ref="tb" @selection-change="handleDetailSelectionChange" :row-class-name="rowClassName">
+      <el-table-column
+              type="selection"
+              width="50"
+              align="center"
+      />
+      <el-table-column v-for="item in columnData" :key="item.prop"  :prop="item.prop" :width="item.width">
+        <template slot="header">
+          {{ item.label }}
+<!--          <i-->
+<!--                  class="el-icon-remove"-->
+<!--                  style="color:red;cursor:pointer;"-->
+<!--                  @click="deleteColumns(item.prop)"-->
+<!--          ></i>-->
+        </template>
+        <template slot-scope="scope">
+            <span v-if="scope.row[item.prop] !== null">
+                <el-input v-model="scope.row[item.prop]"></el-input>
+            </span>
+<!--          <span style="color: red; cursor: pointer;" v-else @click="deleteColumns(item.prop)">删除列</span>-->
+        </template>
+      </el-table-column>
+      <!-- <el-table-column fixed="right" label="操作" width="100">
+          <template slot-scope="scope">
+          <el-button @click="deleteRows(scope)" v-if="scope.$index < tableData.length " type="text" size="small">删除行
+          </el-button>
+          </template>
+      </el-table-column> -->
+    </el-table>
+  </template>
+
+</div>
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../plugins/element-ui/index.js"></script>
+<!-- 引入axios -->
+<script src="../../plugins/axios/axios.min.js"></script>
+<script src="../../js/request.js"></script>
+<script src="../../js/validate.js"></script>
+<script src="../../api/login.js"></script>
+<script type="module">
+  //Vue.config.productionTip = false//阻止启动生产消息
+  //点击添加
+
+  new Vue({
+    el: '#app',
+    data() {
+    return {
+      columnLabel: '', //要增加的列名
+      columnPropIndex: 3, //列属性自增
+      columnData: [{label:'id',prop:"items0"},{label:'公司名',prop:"items1"},{label:'类型',prop:"items2"},{label:'联系方式',prop:"items3"},{label:'地址',prop:"items4"}],//列标题数组
+      checkedDetail:[],
+//表格数据
+      tableData: [
+        {
+          items0: '1',
+          items1: '上海怡然仪器设备有限公司',
+          items2: '仪器设备',
+          items3: '13154030506',
+          items4: '上海市皇甫区福建中路567号'
+        },
+        {
+          items0: '2',
+          items1: '彭页软件股份有限公司',
+          items2: '技术支持',
+          items3: '(028)85333355',
+          items4: '成都市武侯区府城大道西段399号'
+        },
+        {
+          items0: '3',
+          items1: '陕西制药责任有限公司',
+          items2: '药品提供',
+          items3: '75885860',
+          items4: '西安市临潼区秦林南路68号'
+        },
+        {
+          items0: '4',
+          items1: '成都继江制药公司',
+          items2: '药品提供',
+          items3: '(028)85333354',
+          items4: '成都市双流区空港二路381号'
+        },
+        {
+          items0: '5',
+          items1: '龙河装饰建材有限公司',
+          items2: '仪器设备',
+          items3: '13154251654',
+          items4: '上海市浦东区福建中路47号'
+        },
+        {
+          items0: '6',
+          items1: '新河制药有限公司',
+          items2: '药品提供',
+          items3: '13154030506',
+          items4: '上海市皇甫区福建中路447号'
+        },
+      ]
+
+    };
+  },
+    methods: {
+      on(){
+        this.$notify({
+          title: '成功',
+          message: '资源信息保存成功',
+          type: 'success'
+        });
+      },
+      /** 添加行 */
+      addRows() {
+        const circle = this.tableData[0]; //取出数组中第一个对象
+        if (circle) {
+          const newObj = {};
+          for (let key in circle) { //把第一个对象的属性都赋值给新对象newObj  然后每个属性的值都设置为空；
+            newObj[key] = '';
+          }
+          this.tableData.splice(this.tableData.length, 0, newObj);
+        }
+      },
+      /** 选择行 */
+      handleDetailSelectionChange(selection){
+        if (selection.length > 1) {         //删除一行
+          this.$refs.tb.clearSelection();//清空用户的选择
+          this.$refs.tb.toggleRowSelection(selection.pop());//切换某一行的选中状态
+        } else {
+          this.checkedDetail = selection;
+        }
+      },
+      /** 删除行 */
+      deleteRows() {
+        if (this.checkedDetail.length == 0) {
+          this.$alert("请先选择要删除的数据", "提示", {
+            confirmButtonText: "确定",
+          });
+        } else {
+          this.tableData.splice(this.checkedDetail[0].index-1,1);
+        }
+      },
+      /** 添加行索引 */
+      rowClassName({ row, rowIndex }) {
+        row.index = rowIndex + 1;
+      },
+
+      /** 添加列 */
+      addColumn() {
+        this.$prompt("请输入列名", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消"
+        }).then(({ value }) => {
+          this.columnLabel = value
+          const _this = this;
+          // 1、//列标题数组中 增加一个标题
+          const columnObj = {};
+          var propStr = 'items'; //自定义一个列属性；
+          columnObj.prop = propStr + this.columnPropIndex; //拼接自增数
+          columnObj.label = this.columnLabel;
+          this.columnData.push(columnObj);
+          _this.columnPropIndex++; //自增数每次加一
+          //2、数据包中每个对象增加一个生成的新属性
+          _this.tableData.forEach(function (item, index) { //遍历数据包
+            //每个对象新加一个属性 每一行数据值默认给''
+            if (index < (_this.tableData.length )) {
+              _this.$set(item, columnObj.prop, '');
+            } else {
+              //最后一个给null  才会是删除列的按钮 不然是输入框
+              _this.$set(item, columnObj.prop, null);
+            }
+          });
+        });
+      },
+
+      /** 删除列 */
+      deleteColumns(property) {
+        const _this = this;
+        // 你想删除属性:property
+        _this.tableData.forEach(function (item, index) { //遍历数组中的每个对象 删除指定的属性
+          _this.$delete(item, property);
+        });
+        // 2、删除表头数组里的数据
+        _this.columnData.forEach(function (item, index) {
+          if (item.prop === property) {
+            _this.columnData.splice(index, 1);
+          }
+        });
+      },
+
+
+    },
+  })
+
+</script>
+</body>
+</html>

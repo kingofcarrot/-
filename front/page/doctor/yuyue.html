@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Import style -->
+  <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+  <!-- Import Vue 3 -->
+  <script src="//unpkg.com/vue@3"></script>
+  <!-- Import component library -->
+  <script src="//unpkg.com/element-plus"></script>
+  <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<div id="docApp">
+    <div class="DepInfo" v-if="DepInfo">
+        <el-container>
+
+            <el-header style="text-align: center; font-size: 12px">
+                <el-row class="row-bg" justify="space-evenly" :gutter="0">
+                    <el-col :span="4">
+                        <div class="grid-content ep-bg-purple">
+                            <el-button type="primary" @click="getOrderRecord()">查看预约记录</el-button>
+                        </div>
+                    </el-col>
+                    <el-col :span="16">
+                        <div class="grid-content ep-bg-purple">
+                            <el-select  v-model="depName" class="m-2" placeholder="Select">
+                                <el-option v-for="item in depList" :key="item.id" :label="item.name"
+                                           :value="item.id" />
+                            </el-select>
+                        </div>
+                    </el-col>
+                    <el-col :span="4">
+                        <div class="grid-content ep-bg-purple">
+                            <el-button type="success" @click="getDocOfDep()">查询</el-button>
+                        </div>
+                    </el-col>
+                </el-row>
+            </el-header>
+            <el-main>
+                <el-scrollbar>
+                    <el-row>
+                        <el-col v-for="(item, index) in docList" :key="item.id" :span="8" :offset="index">
+                            <el-card :body-style="{ padding: '0px' }">
+                                <img src="" class="image" />
+                                <div style="padding: 14px">
+                                    <span>{{item.name}}</span><br>
+                                    <span>{{item.sex}}</span>
+                                    <div class="bottom">
+                                        <time class="time">{{ item.telephone }}</time>
+                                        <el-button type="success" text class="button" @click="getDocInfo(item)">详细信息</el-button>
+                                    </div>
+                                </div>
+                            </el-card>
+                        </el-col>
+                    </el-row>
+                </el-scrollbar>
+            </el-main>
+
+        </el-container>
+    </div>
+    <div v-else>
+        <div class="DocInfo" v-if="DocInfo">
+        <el-container>
+
+            <el-header>
+
+                    <el-button type="primary" @click="goOff()">返回</el-button>
+                    <el-button type="success" @click="setOrder()">预约</el-button>
+
+            </el-header>
+            <el-main style="text-align: right; font-size: 12px">
+                <el-scrollbar>
+                    <el-descriptions title="医生信息" class="margin-top" :size="large" :border="true" :column="1">
+
+                        <el-descriptions-item label="ID">{{ docInfo.id }} </el-descriptions-item>
+                        <el-descriptions-item label="姓名">{{ docInfo.name }}</el-descriptions-item>
+                        <el-descriptions-item label="性别">{{ docInfo.sex }}</el-descriptions-item>
+                        <el-descriptions-item label="电话号码">{{ docInfo.telephone }}</el-descriptions-item>
+                    </el-descriptions>
+
+
+                    <!-- <input type="text" v-model="comment"/>
+                <p>{{ comment }}</p>
+                <button @click="addComment()">添加评论</button> -->
+                    <div v-for="item in commentList" style="margin-top: 20px;" :border="true">
+                        <el-descriptions title="" class="margin-top" :size="large" :border="true" :column="2"
+                                         :label-align="right">
+
+                            <el-descriptions-item label="姓名">{{ item.name }}</el-descriptions-item>
+                            <el-descriptions-item label="评论">{{ item.comment }}</el-descriptions-item>
+                        </el-descriptions>
+                    </div>
+                </el-scrollbar>
+            </el-main>
+            <el-footer>
+                <div>
+                    <el-input style="margin-top: 10px;" v-model="comment" :row="2" type="textarea"
+                              placeholder="Please input" />
+                </div>
+                <el-button type="success" @click="addComment()">添加评论</el-button>
+            </el-footer>
+        </el-container>
+    </div>
+    <div v-else>
+        <el-container >
+            <el-header style="text-align: left; font-size: 12px">
+                <el-button  type="primary" @click="goOff()">返回</el-button>
+            </el-header>
+            <el-main >
+                <el-scrollbar>
+
+
+                    <el-table :data="orderRecord" style="width: 100%;" :fit="true">
+                        <el-table-column label="时间" width="180"><template #default="scope">{{ orderRecord[scope.$index].date}}</template></el-table-column>
+                        <el-table-column  label="医生"  ><template #default="scope">{{ orderRecord[scope.$index].docName}}</template></el-table-column>
+                    </el-table>
+
+                </el-scrollbar>
+            </el-main>
+        </el-container>
+    </div>
+</div>
+</div>
+
+</body>
+
+<script setup type="module">
+  const { createApp, ref, onMounted } = Vue
+  const app = createApp({
+    setup() {
+      let docList = ref(0)
+      let depList = ref(0)
+      let depName = ref("科室")
+        let pId=ref(0)
+      let comment = ref("")
+      let docInfo = ref(0)
+      let commentList = ref(0)
+      let index = ref(0)
+      let userId = ref(0)
+
+      let DepInfo = ref(true)
+      let DocInfo = ref(true)
+
+      let orderRecord = ref(0)
+
+
+      onMounted(() => {
+        getDepInfo()
+      })
+
+      //获取科室信息
+      const getDepInfo = () => {
+        axios.get("dockersys/list/dep")
+                .then(function (response) {
+                  depList.value = response.data.data
+                  console.log(response.data.data)
+                  console.log(depList)
+                  console.log("获取客室信息成功")
+                })
+                .catch(function (error) {
+                  console.log(error);
+                })
+      }
+
+      //获取医生信息
+      const getDocOfDep = () => {
+        axios.get("/dockersys/listbydep", {
+          params: {
+            depId: depName.value
+          }
+        })
+                .then(function (response) {
+                  console.log(response.data.data)
+                  docList.value = response.data.data
+                  console.log(depName.value)
+
+                  console.log("获取科室中的医生信息 成功")
+                })
+                .catch(function (error) {
+                  console.log(error)
+                })
+
+        const getDocInfo = () => {
+
+        }
+      }
+      //获取医生的详细信息
+      const getDocInfo = (item) => {
+        docInfo.value = item
+        console.log(docInfo.value.id)
+        axios.get("/dockersys/showcomment?id="+docInfo.value.id, {
+          params: {
+            // id: docInfo.id
+          }
+        })
+                .then(function (response) {
+                  commentList.value = response.data.data;
+                  DepInfo.value = false
+                })
+                .catch(function (error) {
+                  console.log(error)
+                })
+      }
+
+      //返回上一页
+      const goOff = () => {
+        if (DepInfo.value == false || DocInfo.value == false) {
+          DocInfo.value = true
+          DepInfo.value = true
+        }
+                // else if (this.docApp == false && this.docComment == true) {
+                //     this.docApp = true
+        // }
+        else
+          alert("返回出错")
+      }
+      //设置预约
+      const setOrder = () => {
+        axios.get("/dockersys/add/orderinfo?id=1", {
+          params: {
+            docId: docInfo.value.id
+          }
+        })
+                .then(function (response) {
+                  if (response.data.data == 1 && response.data.code == 200) {
+                    alert("预约成功")
+                  }
+                  else {
+                    alert("预约失败")
+                  }
+                })
+                .catch(function (error) {
+                  console.log(error)
+                })
+      }
+      const getUserId = () => {
+        axios.get("/userinfo/getid")
+                .then(function (response) {
+                  userId = response.data.data
+                  console.log(response.data.data)
+                })
+                .catch(function (error) {
+                  console.log(error)
+                  console.log("获取用户ID失败")
+                })
+      }
+      //添加评论
+      const addComment = () => {
+          var params = {
+              pId: '1',
+              comment: comment.value
+          }
+            console.log(comment.value);
+           console.log(pId);
+          axios.post('/dockersys/add/comment?id='+ docInfo.value.id,params)
+              .then(function(response){
+                  console.log(response);
+                  if ( response.data.code == 200) {
+                      alert("添加评论成功")
+                  }
+                  else {
+                      alert("失败")
+                  }
+              })
+              .catch(function(error){
+                  console.log(error);
+              });
+        // axios.post("/dockersys/add/comment?id=" + docInfo.value.id, {
+        //   data: {
+        //     pId: '1',
+        //     comment: comment
+        //   }
+        // })
+        //     .then(function (response) {
+        //           alert("添加成功")
+        //         })
+        //         .catch(function (error) {
+        //           console.log(error)
+        //         })
+      }
+
+      const getOrderRecord = () => {
+
+        axios.get("/dockersys/show/orderinfo?id=1")
+                .then(function (response) {
+                  orderRecord.value = response.data.data
+                  console.log(orderRecord)
+                  console.log(response.data.data)
+                  DocInfo.value = false
+                  DepInfo.value = false
+                })
+                .catch(function (error) {
+                  console.log(error);
+                })
+      }
+      return {
+        docList,
+        depList,
+        depName,
+        getDocOfDep,
+        getDepInfo,
+
+        DepInfo,
+        DocInfo,
+        docInfo,
+        getDocInfo,
+        goOff,
+        setOrder,
+        addComment,
+        commentList,
+        comment,
+
+        orderRecord,
+        getOrderRecord,
+      }
+    }
+  })
+  axios.defaults.baseURL = "http://10.135.129.4:8081"
+  axios.defaults.headers['Content-Type']='application/json'
+  app.use(ElementPlus)
+  app.mount("#docApp")
+</script>
+
+<style>
+  /* 卡片样式 */
+  .time {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .bottom {
+    margin-top: 13px;
+    line-height: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .button {
+    padding: 0;
+    min-height: auto;
+  }
+
+  .image {
+    width: 100%;
+    display: block;
+  }
+</style>
+
+</html>

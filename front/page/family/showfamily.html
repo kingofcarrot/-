@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Import style -->
+  <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+  <!-- Import Vue 3 -->
+  <script src="//unpkg.com/vue@3"></script>
+  <!-- Import component library -->
+  <script src="//unpkg.com/element-plus"></script>
+  <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<div id="HealthInfo2">
+  <div v-if="CardisShow">
+    <div v-for="item in relationshipList">
+      <el-card class="box-card" style="margin-top: 20px;">
+
+        <el-descriptions class="item text">
+          <template #extra>
+            <el-button type="primary" @click="getHealthInfo(item)">健康档案</el-button>
+          </template>
+          <el-descriptions-item label="用户ID">{{item.idB}}</el-descriptions-item>
+          <el-descriptions-item label="姓名">{{item.nameB}}</el-descriptions-item>
+          <el-descriptions-item label="关系">{{item.relationship}}</el-descriptions-item>
+        </el-descriptions>
+
+      </el-card>
+    </div>
+  </div>
+
+  <div v-else>
+    <el-descriptions title="健康信息" border :column="1">
+      <template #extra>
+        <el-button type="primary" @click="goBack()">返回</el-button>
+      </template>
+      <el-descriptions-item label="姓名">{{ relationship.nameB }}</el-descriptions-item>
+      <el-descriptions-item label="血型">{{ healthinfo.bloodType }}</el-descriptions-item>
+      <el-descriptions-item label="家族病史">{{ healthinfo.familyHistory }}</el-descriptions-item>
+      <el-descriptions-item label="既往疾病史">{{ healthinfo.illnessHistory }}</el-descriptions-item>
+      <el-descriptions-item label="残疾情况">{{ healthinfo.disability }}</el-descriptions-item>
+      <el-descriptions-item label="身体健康指数">{{ healthinfo.bodyHealth }}</el-descriptions-item>
+      <el-descriptions-item label="心理健康指数">{{ healthinfo.mindHealth }}</el-descriptions-item>
+    </el-descriptions>
+  </div>
+</div>
+</body>
+
+<script setup type="module">
+  const { createApp, ref, onMounted } = Vue
+  const app = createApp({
+    setup() {
+      let relationshipList = ref(0)
+      let relationship = ref(0)
+      let healthinfo = ref(0)
+
+      let CardisShow = ref(true)
+
+      onMounted(() => {
+        getRelationshipList()
+      })
+      //获取数据
+      const getRelationshipList = () => {
+        axios.get("/family/show/relation?id=1")
+                .then(function (response) {
+                  relationshipList.value = response.data.data
+                  console.log(relationshipList)
+                })
+                .catch(function (response) {
+                  console.log(error)
+                })
+      }
+
+      const getHealthInfo = (item) => {
+        relationship.value = item
+        axios.get("/dockersys/get/healthinfo?id="+relationship.value.idB, {
+          params: {
+            // id: relationship.idB
+          }
+        })
+                .then(function (response) {
+                  healthinfo.value = response.data.data
+                  console.log(healthinfo)
+                  console.log("获取亲人信息成功")
+                  CardisShow.value = false
+                })
+                .catch(function (error) {
+                  console.log(error)
+                })
+      }
+
+      const goBack = () => {
+        CardisShow.value = true
+      }
+
+      return {
+        relationshipList,
+        healthinfo,
+        getHealthInfo,
+        relationship,
+        goBack,
+        CardisShow,
+      }
+    }
+  })
+  axios.defaults.baseURL = "http://10.135.129.4:8081"
+  app.use(ElementPlus)
+  app.mount("#HealthInfo2")
+</script>
+
+
+<style scoped>
+  .text {
+    font-size: 14px;
+  }
+
+  .item {
+    padding: 18px 0;
+  }
+
+  .box-card {
+    width: 480px;
+  }
+
+  .cell-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .margin-top {
+    margin-top: 20px;
+  }
+</style>
+
+</html>

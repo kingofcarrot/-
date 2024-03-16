@@ -1,0 +1,51 @@
+{
+  "id": "2552591",
+  "name": "rjwm",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "8776784",
+      "name": "order",
+      "font_class": "order",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "8776823",
+      "name": "cart",
+      "font_class": "cart",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "8776998",
+      "name": "phonecall",
+      "font_class": "phonecall",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    },
+    {
+      "icon_id": "8777250",
+      "name": "user",
+      "font_class": "user",
+      "unicode": "e64d",
+      "unicode_decimal": 58957
+    },
+    {
+      "icon_id": "8777307",
+      "name": "partner",
+      "font_class": "partner",
+      "unicode": "e64e",
+      "unicode_decimal": 58958
+    },
+    {
+      "icon_id": "8777414",
+      "name": "info",
+      "font_class": "info",
+      "unicode": "e654",
+      "unicode_decimal": 58964
+    }
+  ]
+}

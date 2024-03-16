@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <style>
+    .cooperation-box {
+      margin-left: auto;
+      margin-right: auto;
+      width:90%;
+      position: relative;
+      height: 150px;
+      border-bottom: 1px solid #E0DED9;
+      overflow: hidden;
+
+    }
+    .cooperation {
+      position: relative;
+      left: 0;
+      height: 50px;
+      padding: 20px 0;
+    }
+    .cooperation li {
+      float: left;
+      width: 205px;
+      text-align: center;
+    }
+    .cooperation li a {
+      display: block;
+    }
+    .cooperation li img {
+      height: 100%;
+    }
+    .cooperation-box>a {
+      display: block;
+      position: absolute;
+      top: 0;
+      z-index: 9;
+      width: 22px;
+      height: 100%;
+      background: #f5f5f5;
+      font-family: '宋体';
+      font-size: 18px;
+      color: #aaa;
+      font-weight: bold;
+      text-align: center;
+      line-height: 91px;
+    }
+    .cooperation-box>a:hover {
+      background: #e5e5e5;
+    }
+    .cooperation-box .prev {
+      height: 200px;
+      line-height: 200px;
+      left: 0;
+      border-right: 1px solid #E0DED9;
+    }
+    .cooperation-box .next {
+      height: 200px;
+      line-height: 200px;
+      right: 0;
+      border-left: 1px solid #E0DED9;
+    }
+    .cooperation-box .prev.disabled,
+    .cooperation-box .next.disabled {
+      background: #fbfbfb;
+      color: #ddd;
+    }
+    .cooperation-box .prev.disabled:hover,
+    .cooperation-box .next.disabled:hover {
+      background: #fbfbfb;
+    }
+
+  /*布局样式*/
+    .divClass {
+      width: 100%;
+      height: 100%;
+    }
+
+    .cards {
+      display: flex;
+      /* 超出容器宽度自动换行 */
+      flex-wrap: wrap;
+    }
+
+    .cards__item {
+      /* 初始化每个卡片的宽度，占据父容器的 1/4 */
+      height: 270px;
+      flex-basis: 28%;
+      margin: 28px;
+      //border: 1px solid rgba(255, 0, 0, 1);
+    //   display: flex;
+    //   align-items: center;
+    //   justify-content: center;
+    }
+  </style>
+</head>
+<body>
+<div class="cooperation-box">
+  <a class="prev" href="javascript:;"><</a>
+  <a class="next" href="javascript:;">></a>
+  <ul class="cooperation">
+    <li><a href="javascript:;" target="_blank"><img src="../../images/img.png" alt=""></a></li>
+    <li><a href="javascript:;" target="_blank"><img src="../../images/img_2.png" alt=""></a></li>
+    <li><a href="javascript:;" target="_blank"><img src="../../images/img_3.png" alt=""></a></li>
+    <li><a href="javascript:;" target="_blank"><img src="../../images/img_4.png" alt=""></a></li>
+  </ul>
+</div>
+
+<div id="app">
+  <template>
+    <div class="divClass">
+      <div class="cards">
+        <!-- 需分配宽度给卡片单元格 -->
+        <div class="cards__item">
+          <h4>用户信息</h4>
+          <el-collapse v-model="activeNames1" accordion="true" @change="handleChange">
+            <el-collapse-item title="个人信息" name="1">
+              <div>用户信息展示：直观展示用户注册信息，包括用户个人健康信息，系统注册信息等；</div>
+            </el-collapse-item>
+            <el-collapse-item title="亲人信息 " name="2">
+              <div>显示亲人认证模块中绑定的亲人信息，包括亲属关系，联系方式等</div>
+              <div>可通过亲人认证模块更改信息</div>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
+
+        <!-- 此处重复多个 cards__item 卡片单元格-->
+        <div class="cards__item">
+          <h4>个人健康</h4>
+          <el-collapse v-model="activeNames2" accordion="true" @change="handleChange">
+            <el-collapse-item title="展示健康档案" name="1">
+              <div>展示用户的健康档案信息，存储在后台服务器中</div>
+              <div>可通过健康评估功能更改信息</div>
+            </el-collapse-item>
+            <el-collapse-item title="健康知识库" name="2">
+              <div>可根据疾病的分类，在健康知识库中查询疾病症状</div>
+              <div>健康知识库可通过服务端更新数据</div>
+            </el-collapse-item>
+            <el-collapse-item title="个人健康评估" name="3">
+              <div>提交健康信息，保存在后台</div>
+            </el-collapse-item>
+
+          </el-collapse>
+        </div>
+        <div class="cards__item">
+          <h4>医生咨询</h4>
+          <el-collapse v-model="activeNames3" accordion="true" @change="handleChange">
+            <el-collapse-item title="健康咨询" name="1">
+              <div>可根据科室选择要预约的医生，预约后可查看预约记录</div>
+              <div>在医生详细信息板块可以添加用户评论</div>
+            </el-collapse-item>
+          </el-collapse>
+          </div>
+        <div class="cards__item">
+          <h4>亲人自助</h4>
+          <el-collapse v-model="activeNames5" accordion="true" @change="handleChange">
+            <el-collapse-item title="展示亲人档案" name="1">
+              <div>展示添加的亲属的健康档案</div>
+            </el-collapse-item>
+              <el-collapse-item title="亲人绑定" name="2">
+                <div>通过电话号码向后台发出认证请求，等待验证</div>
+                <div>验证成功后可以添加到亲属列表中</div>
+              </el-collapse-item>
+          </el-collapse>
+      </div>
+        <div class="cards__item">
+          <h4>资源管理</h4>
+          <el-collapse v-model="activeNames4" accordion="true" @change="handleChange">
+            <el-collapse-item title="资源管理" name="1">
+              <div>查询服务商信息</div>
+              <div>后续功能敬请期待！</div>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
+    </div>
+
+    </div>
+  </template>
+</div>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../plugins/element-ui/index.js"></script>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+  $(function() {
+    $.scroll({time: 1500});
+  });
+
+  $.extend({
+    /*
+     图片轮播效果
+     效果：
+     1、自动滚动
+     2、鼠标悬停
+     3、左右控制+禁止点击
+     调用：$.scroll({box: '父容器', scrollbox: 'ul', time: 1500});
+     */
+    scroll: function(options) {
+      // 默认配置
+      var defaults = {
+        box: '.cooperation-box',  // 父容器
+        scrollbox: '.cooperation', // ul容器
+        time: 2000  // 切换时间
+      };
+
+      // 扩展配置
+      var conf = $.extend({}, defaults, options);
+
+      // 获取li的个数
+      var liSize = $(conf.box).find('li').size();
+
+      // 获取li的宽度
+      var liWidth = $(conf.box).find('li:first').width();
+
+      // 定义ul的宽度
+      $(conf.scrollbox).width(liWidth*liSize);
+
+      // 右箭头初始化(不可点)
+      $(conf.box).find('.next').addClass('disabled');
+
+      // 定义一个全局变量index索引变量
+      var index = 0;
+
+      // 切换函数
+      function switchFunc() {
+        index++;
+        if(index > liSize-5) {  // 必须有5个显示在上面
+          index=liSize-5;
+
+          // 把滚动过的添加到后面，初始left值为0 index值为0
+          var scrolledLi = $(conf.box).find('li:lt('+index+')');
+          $(conf.scrollbox).append(scrolledLi);
+          $(conf.scrollbox).css('left', 0);
+          index = 0;
+        }
+        $(conf.scrollbox).stop(true, true).animate(
+                {'left': -liWidth*index},
+                500,
+                function() {
+                  $(conf.box).find('.next').removeClass('disabled');
+                }
+        );
+      }
+
+      // 自动播放
+      var autoPlay = setInterval(function() {switchFunc();}, conf.time);
+
+      // 鼠标浮上暂停
+      $(conf.box).mouseover(function() {
+        clearInterval(autoPlay);
+      });
+
+      // 鼠标离开继续
+      $(conf.box).mouseout(function() {
+        autoPlay = setInterval(function() {switchFunc();}, conf.time);
+      });
+
+      // 点击左箭头
+      $(conf.box).find('.prev').click(function() {
+        index++;
+        if(index >= liSize-5) {
+          index=liSize-5;
+          $(this).addClass('disabled');
+        }
+        $(conf.scrollbox).stop(true, true).animate(
+                {'left': -liWidth*index},
+                500,
+                function() {
+                  $(conf.box).find('.next').removeClass('disabled');
+                }
+        );
+      });
+
+      // 点击右箭头
+      $(conf.box).find('.next').click(function() {
+        index--;
+        if(index <= 0) {
+          index = 0;
+          $(this).addClass('disabled');
+        }
+        $(conf.scrollbox).stop(true, true).animate(
+                {'left': -liWidth*index},
+                500,
+                function() {
+                  $(conf.box).find('.prev').removeClass('disabled');
+                }
+        );
+      });
+    }
+  });
+
+
+  var Main = {
+    data() {
+      return {
+        activeNames1: ['1'],
+        activeNames2: ['1'],
+        activeNames3: ['1'],
+        activeNames4: ['1'],
+        activeNames5: ['1'],
+      };
+    },
+    methods: {
+      handleChange(val) {
+        console.log(val);
+      }
+    }
+
+  };
+  var Ctor = Vue.extend(Main)
+  new Ctor().$mount('#app')
+</script>
+</body>
+</html>

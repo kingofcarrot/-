@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Import style -->
+  <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+  <!-- Import Vue 3 -->
+  <script src="//unpkg.com/vue@3"></script>
+  <!-- Import component library -->
+  <script src="//unpkg.com/element-plus"></script>
+  <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<div id='healthInfo'>
+  <el-descriptions title="健康信息" border :column="1">
+    <el-descriptions-item label="用户ID">{{ healthInfo.id }}</el-descriptions-item>
+    <el-descriptions-item label="血型">{{ healthInfo.bloodType }}</el-descriptions-item>
+    <el-descriptions-item label="家族病史">{{ healthInfo.familyHistory }}</el-descriptions-item>
+    <el-descriptions-item label="既往疾病史">{{ healthInfo.illnessHistory }}</el-descriptions-item>
+    <el-descriptions-item label="残疾情况">{{ healthInfo.disability }}</el-descriptions-item>
+    <el-descriptions-item label="身体健康指数">{{ healthInfo.bodyHealth }}</el-descriptions-item>
+    <el-descriptions-item label="心理健康指数">{{ healthInfo.mindHealth }}</el-descriptions-item>
+  </el-descriptions>
+</div>
+</body>
+
+<script setup type="module">
+  const { createApp, ref, onMounted } = Vue
+  const app = createApp({
+    setup() {
+      let healthInfo = ref(0)
+      let userId = ref(0)
+
+      onMounted(() => {
+        getHealthInfo()
+      })
+      //获取用户ID
+      const getUserId = () => {
+        axios.get("/userinfo/getid")
+                .then(function (response) {
+                  userId.value = response.data.data
+                  console.log(response.data.data)
+                  console.log("获取用户ID成功")
+                })
+                .catch(function (error) {
+                  console.log("获取用户ID失败")
+                })
+      }
+
+      //获取健康档案
+      const getHealthInfo = () => {
+        //getUserId()
+        axios.get("/dockersys/get/healthinfo?id=1", {
+          params: {
+
+          }
+        })
+                .then(function (response) {
+                  healthInfo.value = response.data.data
+                  console.log(response.data.data)
+                })
+                .catch(function (error) {
+                  console.log("获取健康档案失败")
+                  console.log(error)
+                })
+      }
+
+      return{
+        healthInfo,
+        userId,
+      }
+    }
+  })
+  axios.defaults.baseURL = "http://10.135.129.4:8081"
+  app.use(ElementPlus)
+  app.mount("#healthInfo")
+</script>
+
+<style scoped>
+  .cell-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .margin-top {
+    margin-top: 20px;
+  }
+</style>
+</html>

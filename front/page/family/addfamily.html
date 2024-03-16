@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <!-- 引入组件库 -->
+  <style>
+
+  </style>
+</head>
+<body>
+<div id="app">
+  <el-form ref="form" :model="form1" label-width="80px">
+    <el-form-item label="输入电话">
+      <el-input v-model="form1.phone"></el-input>
+    </el-form-item>
+    <el-form-item label="亲属关系">
+      <el-select v-model="form1.relation" placeholder="请选择关系">
+        <el-option label="父亲" value="父亲"></el-option>
+        <el-option label="母亲" value="母亲"></el-option>
+        <el-option label="儿子" value="儿子"></el-option>
+        <el-option label="女儿" value="女儿"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item>
+      <el-button
+              plain
+              @click="open1">
+        提交
+      </el-button>
+    </el-form-item>
+  </el-form>
+</div>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../plugins/element-ui/index.js"></script>
+<!-- 引入axios -->
+<script src="../../plugins/axios/axios.min.js"></script>
+<script src="../../js/request.js"></script>
+<script src="../../js/validate.js"></script>
+<script src="../../api/login.js"></script>
+<script >
+
+
+  var Main = {
+    data() {
+      return {
+        form1: {
+          phone:'',
+          relation:''
+        }
+      }
+    },
+    methods: {
+      open1() {
+        console.log(this.form1.phone)
+        console.log(this.form1.relation)
+        const baseurl = 'http://10.135.129.4:8081/family/addrelation?id=1&'+'phone='+this.form1.phone+"&relation="+this.form1.relation;
+        console.log(baseurl);
+        axios.get(baseurl)
+                .then(function(response){
+                  console.log(response);
+                  if(response.data.code=='200')
+                    alert("成功");
+                    else
+                        alert("失败");
+                })
+                .catch(function(error){
+                  console.log(error);
+
+                });
+        // this.$notify({
+        //   title: '成功',
+        //   message: '提交成功，请等待后台验证',
+        //   type: 'success'
+        // });
+      },
+    }
+  }
+  var Ctor = Vue.extend(Main)
+  new Ctor().$mount('#app')
+</script>
+</body>
+</html>
